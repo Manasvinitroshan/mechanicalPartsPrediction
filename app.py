@@ -7,7 +7,7 @@ import pandas as pd
 @st.cache_resource
 def load_model():
     # Replace 'trained_model.pkl' with the actual path to your saved model file
-    with open('trained_model.pkl', 'rb') as f:
+    with open('optimized_trained_model.pkl', 'rb') as f:
         model = pickle.load(f)
     return model
 
@@ -28,33 +28,33 @@ st.write(f"Calculated Volume: {volume:.2f} cubic inches")
 st.header("Material Details")
 # Dropdown for Material Grade
 material_grade = st.selectbox(
-    "Select Material Grade ($/lb):", 
-    ["Grade A", "Grade B", "Grade C", "Grade D"]
+    "Select Material Grade:", 
+    ["Inconel 718", "13 Cr", "25 Cr", "4140"]
 )
 
 # Convert material grade to numeric values for prediction
 material_grade_value = {
-    "Grade A":12,
-    "Grade B": 2.8,
-    "Grade C": 3.5,
-    "Grade D": 1.1
+    "Inconel 718":12,
+    "13 Cr": 2.8,
+    "25 Cr": 3.5,
+    "4140": 1.1
 }[material_grade]
 
 st.header("Add-Ons")
 threading_type = st.selectbox("Select Threading Type Add-On (Beta):", ["VAM TOP®", "JFE Lion", "TenarisHydril Blue®"])
 coating_addon = st.selectbox("Select Coating Add-On (Gamma):", ["Phosphate", "Carbide", "Copper", "Xylan", "Nickel"])
 manufacturing_conversion = st.selectbox(
-    "Select Manufacturing Conversion Factor (Alpha):", 
-    ["X", "Y", "Z"]
+    "Select Manufacturing Conversion Factor for the Part Family (Alpha):", 
+    ["Part Family A", "Part Family B", "Part Family C"]
 )
 
 # Convert threading, coating, and manufacturing conversion to numeric values for prediction
 threading_type_value = {"VAM TOP®": 1.2, "JFE Lion": 1.15, "TenarisHydril Blue®": 1.17}[threading_type]
 coating_addon_value = {"Phosphate": 1, "Carbide": 1.1, "Copper": 1.02, "Xylan": 1.01, "Nickel": 1.05}[coating_addon]
 manufacturing_conversion_value = {
-    "X": 1.8,
-    "Y": 2.5,
-    "Z": 4.2,
+    "Part Family A": 1.8,
+    "Part Family B": 2.5,
+    "Part Family C": 4.2,
 }[manufacturing_conversion]
 
 # Prediction

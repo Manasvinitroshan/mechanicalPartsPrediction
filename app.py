@@ -3,74 +3,72 @@ import numpy as np
 import pickle
 import pandas as pd
 
-# Load the trained model
+
 @st.cache_resource
 def load_model():
-    # Replace 'trained_model.pkl' with the actual path to your saved model file
-    with open('optimized_trained_model.pkl', 'rb') as f:
+    
+    with open('trained_model2.pkl', 'rb') as f:
         model = pickle.load(f)
     return model
 
 model = load_model()
 
-# App Title
-st.title("Machine Parts Pricing Prediction")
 
-# User Inputs
-st.header("Machine Parts Details")
+st.title("Mechanical Parts Pricing Prediction")
+
+
+st.header("Mechanical Parts Details")
 diameter = st.number_input("Enter Diameter (in inches):", min_value=0.0, step=0.1)
 length = st.number_input("Enter Length (in inches):", min_value=0.0, step=0.1)
 
-# Volume Calculation
-volume = np.pi * (diameter / 2) ** 2 * length
-st.write(f"Calculated Volume: {volume:.2f} cubic inches")
+
+weight = np.pi * (diameter / 2) ** 2 * length * 0.286
+st.write(f"Calculated Weight: {weight:.2f} lbs")
 
 st.header("Material Details")
-# Dropdown for Material Grade
+
 material_grade = st.selectbox(
     "Select Material Grade:", 
-    ["Inconel 718", "13 Cr", "25 Cr", "4140"]
+    ["F22", "4130"]
 )
 
-# Convert material grade to numeric values for prediction
 material_grade_value = {
-    "Inconel 718":12,
-    "13 Cr": 2.8,
-    "25 Cr": 3.5,
-    "4140": 1.1
+    "F22":1,
+    "4130": 1,
 }[material_grade]
 
 st.header("Add-Ons")
-threading_type = st.selectbox("Select Threading Type Add-On (Beta):", ["VAM TOP®", "JFE Lion", "TenarisHydril Blue®"])
-coating_addon = st.selectbox("Select Coating Add-On (Gamma):", ["Phosphate", "Carbide", "Copper", "Xylan", "Nickel"])
-manufacturing_conversion = st.selectbox(
-    "Select Manufacturing Conversion Factor for the Part Family (Alpha):", 
-    ["Part Family A", "Part Family B", "Part Family C"]
-)
+threading_type = st.selectbox("Select Threading Type Add-On:", ["VAM TOP®", "JFE Lion", "TenarisHydril Blue®"])
+coating_addon = st.selectbox("Select Coating Add-On:", ["Phosphate", "Carbide", "Copper", "Xylan", "Nickel"])
 
-# Convert threading, coating, and manufacturing conversion to numeric values for prediction
-threading_type_value = {"VAM TOP®": 1.2, "JFE Lion": 1.15, "TenarisHydril Blue®": 1.17}[threading_type]
-coating_addon_value = {"Phosphate": 1, "Carbide": 1.1, "Copper": 1.02, "Xylan": 1.01, "Nickel": 1.05}[coating_addon]
-manufacturing_conversion_value = {
-    "Part Family A": 1.8,
-    "Part Family B": 2.5,
-    "Part Family C": 4.2,
-}[manufacturing_conversion]
+
+threading_type_value = {"VAM TOP®":"VAM TOP®" , "JFE Lion": "JFE Lion", "TenarisHydril Blue®": "TenarisHydril Blue®"}[threading_type]
+coating_addon_value = {"Phosphate": "Phosphate", "Carbide": "Carbide", "Copper": "Copper", "Xylan": "Xylan", "Nickel": "Nickel"}[coating_addon]
+
 
 # Prediction
 if st.button("Predict Price"):
     if diameter > 0 and length > 0:
         # Create a dataframe with input features
         input_data = pd.DataFrame({
-            'RM Cost/Lb': [material_grade_value],
-            'Volume': [volume],
-            'Alpha': [manufacturing_conversion_value],
-            'Beta': [threading_type_value],
-            'Gamma': [coating_addon_value]
+            'Length (inches)': [length],
+            'Weight (lbs)': [weight],  # Ensure `weight` is defined earlier in your code
+            'Diameter (inches)': [diameter],
+            'F22': [1 if material_grade == 'F22' else 0],
+            '4130': [1 if material_grade == '4130' else 0],
+            'JFE Lion': [1 if threading_type == 'JFE Lion' else 0],
+            'TenarisHydril Blue®': [1 if threading_type == 'TenarisHydril Blue®' else 0],
+            'VAM TOP®': [1 if threading_type == 'VAM TOP®' else 0],
+            'Phosphating': [1 if coating_addon == 'Phosphating' else 0],
+            'Xylan Coating': [1 if coating_addon == 'Xylan Coating' else 0],
+            'Ni Plating': [1 if coating_addon == 'Ni Plating' else 0],
+            'Cu Plating': [1 if coating_addon == 'Cu Plating' else 0],
+            'Carbide Coating': [1 if coating_addon == 'Carbide Coating' else 0],
         })
+
         
-        # Predict using the model
+       
         predicted_price = model.predict(input_data)[0]
-        st.success(f"Predicted Valve Price: ${predicted_price:.2f}")
+        st.success(f"Predicted Price: ${predicted_price:.2f}")
     else:
         st.error("Please fill in all the inputs correctly.")

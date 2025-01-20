@@ -46,13 +46,12 @@ threading_type_value = {"VAM TOP®":"VAM TOP®" , "JFE Lion": "JFE Lion", "Tenar
 coating_addon_value = {"Phosphate": "Phosphate", "Carbide": "Carbide", "Copper": "Copper", "Xylan": "Xylan", "Nickel": "Nickel"}[coating_addon]
 
 
-# Prediction
 if st.button("Predict Price"):
     if diameter > 0 and length > 0:
-        # Create a dataframe with input features
+       
         input_data = pd.DataFrame({
             'Length (inches)': [length],
-            'Weight (lbs)': [weight],  # Ensure `weight` is defined earlier in your code
+            'Weight (lbs)': [weight],  
             'Diameter (inches)': [diameter],
             'F22': [1 if material_grade == 'F22' else 0],
             '4130': [1 if material_grade == '4130' else 0],
